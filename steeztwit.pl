@@ -13,13 +13,13 @@ sub tweet{
     die 'Twitter ENV not configured';
   }
 
-  # build tweet, max 140 chars
+  # build tweet, max 240 chars
   my $tweet;
-  if (length("$text") < 140){
+  if (length("$text") < 240){
     $tweet = "$text";
   }
   else{
-    $tweet = substr($text, 0, 139);
+    $tweet = substr($text, 0, 239);
   }
 
   try{
@@ -37,6 +37,5 @@ sub tweet{
 }
 
 # Send it
-my $text = substr(join(" ", @ARGV), 15, 139);
+my $text = substr(join(" ", @ARGV), 15, 239);
 tweet($text);
-print("\nsent :^)\n");
