@@ -1,4 +1,7 @@
 #!/usr/bin/perl /home/james/programs/twitbot/steeztwit.pl
+use utf8;
+use open ':encoding(utf8)';
+binmode(STDOUT, ":utf8");
 use strict;
 use warnings;
 use Net::Twitter::Lite::WithAPIv1_1;
