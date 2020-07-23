@@ -1,11 +1,13 @@
 #!/usr/bin/perl /home/james/programs/twitbot/steeztwit.pl
 use utf8;
 use open ':encoding(utf8)';
-binmode(STDOUT, ":utf8");
 use strict;
 use warnings;
 use Net::Twitter::Lite::WithAPIv1_1;
 use Try::Tiny;
+
+# fix UTF-8 output
+binmode(STDOUT, ":utf8");
 
 # check for env vars
 unless ($ENV{TWITTER_CONSUMER_KEY}
@@ -40,11 +42,14 @@ sub tweet{
   };
 }
 
-my $to_tweet = substr(join(" ", @ARGV), 15, 254) || undef;
+my $to_tweet;
+if (scalar @ARGV > 1){
+    $to_tweet = substr(@ARGV, 15, 254);
+}
 
 if ($to_tweet){
     print 'TWEETED: '.$to_tweet."\n";
-    #tweet($to_tweet);
+    tweet($to_tweet);
 } else {
     eval {
         my $statuses = $twitter->home_timeline({ count => 5 });
