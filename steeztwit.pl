@@ -22,7 +22,7 @@ my $twitter = Net::Twitter::Lite::WithAPIv1_1->new(
   consumer_secret     => $ENV{TWITTER_CONSUMER_SECRET},
   access_token        => $ENV{TWITTER_ACCESS_TOKEN},
   consumer_key        => $ENV{TWITTER_CONSUMER_KEY},
-  user_agent          => 'SteezBotExample',
+  user_agent          => 'SteezBot',
   ssl => 1);
 
 sub tweet{
@@ -49,12 +49,20 @@ if (scalar @ARGV > 1){
 
 if ($to_tweet){
     print 'TWEETED: '.$to_tweet."\n";
-    tweet($to_tweet);
+    #tweet($to_tweet);
 } else {
+    print "~~Timeline~~\n";
     eval {
         my $statuses = $twitter->home_timeline({ count => 5 });
         for my $status ( @$statuses ) {
             print "$status->{created_at} <$status->{user}{screen_name}> $status->{text}\n";
         }
     };
+    print "~~Mentions~~\n";
+    eval {
+        my $mentions = $twitter->({ mentions => 5 });
+        for my $mention ( @$mentions ) {
+            print "$mention->{created_at} <$mention->{user}{screen_name}> $mention->{text}\n";
+        }
+    }
 }
