@@ -1,4 +1,4 @@
-#!/usr/bin/perl /home/james/Projects/twitbot/steeztwit.pl
+#!/usr/bin/perl /home/james/programs/twitbot/steeztwit.pl
 use utf8;
 use open ':encoding(utf8)';
 use strict;
@@ -21,10 +21,10 @@ unless ($ENV{TWITTER_CONSUMER_KEY}
 # parse cli args
 my $timeline;
 my $mentions;
-my $sendtweet;
+my $posttweet;
 
 GetOptions(
-    "sendtweet=s"       => \$sendtweet, # string
+    "posttweet=s"       => \$posttweet, # string
     "mentions"         => \$mentions, # bool
     "timeline"         => \$timeline # bool
 );
@@ -40,23 +40,23 @@ my $twitter = Net::Twitter::Lite::WithAPIv1_1->new(
 
 sub tweet{
     # clean tweet, max 240 chars
-    if (!(length($sendtweet) < 240)){
-        $sendtweet = substr($sendtweet, 0, 239);
+    if (!(length($posttweet) < 240)){
+        $posttweet = substr($posttweet, 0, 239);
     }
     try{
-        $twitter->update($sendtweet);
+        $twitter->update($posttweet);
     } catch{
         die join(' ',
-                 "Error tweeting $sendtweet",
+                 "Error tweeting $posttweet",
                  $_->code,
                  $_->message,
                  $_->error);
     };
 }
 
-if ($sendtweet){
-    print 'TWEETED: '.$sendtweet."\n";
-    tweet($sendtweet);
+if ($posttweet){
+    print 'TWEETED: '.$posttweet."\n";
+    tweet($posttweet);
 }
 
 if ($timeline){
