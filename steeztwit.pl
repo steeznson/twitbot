@@ -22,11 +22,15 @@ unless ($ENV{TWITTER_CONSUMER_KEY}
 my $timeline;
 my $mentions;
 my $posttweet;
+my $user;
+my $search;
 
 GetOptions(
-    "posttweet=s"       => \$posttweet, # string
-    "mentions"         => \$mentions, # bool
-    "timeline"         => \$timeline # bool
+    "posttweet=s" => \$posttweet, # string
+    "user=s" => \$user, # string
+    "search=s" => \$search, # string
+    "mentions" => \$mentions, # bool
+    "timeline" => \$timeline # bool
 );
 
 # setup connection
@@ -70,6 +74,18 @@ if ($timeline){
     };
 }
 
+if ($user){
+    eval {
+        my $statuses = $twitter->
+            user_timeline({ count => 5, screen_name => $user });
+        for my $status ( @$statuses ) {
+            print("$status->{created_at} ".
+                  "<$status->{user}{screen_name}> ".
+                  "$status->{text}\n");
+        }
+    };
+}
+
 if ($mentions){
     eval {
         my $mentions = $twitter->mentions({ count => 5 });
@@ -77,6 +93,15 @@ if ($mentions){
             print("$mention->{created_at} ".
                   "<$mention->{user}{screen_name}> ".
                   "$mention->{text}\n");
+        }
+    }
+}
+
+if ($search){
+    eval {
+        my $searchresults = $twitter->search($search);
+        for my $res ( @{$searchresults->{statuses}} ) {
+            print "$res->{text}\n";
         }
     }
 }
