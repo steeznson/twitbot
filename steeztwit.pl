@@ -1,8 +1,9 @@
-#!/usr/bin/perl /home/james/programs/twitbot/steeztwit.pl
+#!/usr/bin/perl /home/james/Projects/twitbot/steeztwit.pl
 use utf8;
 use open ':encoding(utf8)';
 use strict;
 use warnings;
+use Getopt::Long;
 use Net::Twitter::Lite::WithAPIv1_1;
 use Try::Tiny;
 
@@ -17,52 +18,65 @@ unless ($ENV{TWITTER_CONSUMER_KEY}
     die 'Twitter ENV not configured';
 }
 
+# parse cli args
+my $timeline;
+my $mentions;
+my $sendtweet;
+
+GetOptions(
+    "sendtweet=s"       => \$sendtweet, # string
+    "mentions"         => \$mentions, # bool
+    "timeline"         => \$timeline # bool
+);
+
+# setup connection
 my $twitter = Net::Twitter::Lite::WithAPIv1_1->new(
-  access_token_secret => $ENV{TWITTER_ACCESS_SECRET},
-  consumer_secret     => $ENV{TWITTER_CONSUMER_SECRET},
-  access_token        => $ENV{TWITTER_ACCESS_TOKEN},
-  consumer_key        => $ENV{TWITTER_CONSUMER_KEY},
-  user_agent          => 'SteezBot',
-  ssl => 1);
+    access_token_secret => $ENV{TWITTER_ACCESS_SECRET},
+    consumer_secret     => $ENV{TWITTER_CONSUMER_SECRET},
+    access_token        => $ENV{TWITTER_ACCESS_TOKEN},
+    consumer_key        => $ENV{TWITTER_CONSUMER_KEY},
+    user_agent          => 'SteezBot',
+    ssl => 1);
 
 sub tweet{
-  my ($text) = shift;
-  # build tweet, max 240 chars
-  my $tweet;
-  if (length("$text") < 240){
-    $tweet = "$text";
-  }
-  else{
-    $tweet = substr($text, 0, 239);
-  }
-  try{
-    $twitter->update($tweet);
-  } catch{
-    die join(' ', "Error tweeting $text", $_->code, $_->message, $_->error);
-  };
+    # clean tweet, max 240 chars
+    if (!(length($sendtweet) < 240)){
+        $sendtweet = substr($sendtweet, 0, 239);
+    }
+    try{
+        $twitter->update($sendtweet);
+    } catch{
+        die join(' ',
+                 "Error tweeting $sendtweet",
+                 $_->code,
+                 $_->message,
+                 $_->error);
+    };
 }
 
-my $to_tweet;
-if (scalar @ARGV > 1){
-    $to_tweet = substr(@ARGV, 15, 254);
+if ($sendtweet){
+    print 'TWEETED: '.$sendtweet."\n";
+    tweet($sendtweet);
 }
 
-if ($to_tweet){
-    print 'TWEETED: '.$to_tweet."\n";
-    #tweet($to_tweet);
-} else {
-    print "~~Timeline~~\n";
+if ($timeline){
     eval {
         my $statuses = $twitter->home_timeline({ count => 5 });
         for my $status ( @$statuses ) {
-            print "$status->{created_at} <$status->{user}{screen_name}> $status->{text}\n";
+            print("$status->{created_at} ".
+                  "<$status->{user}{screen_name}> ".
+                  "$status->{text}\n");
         }
     };
-    print "~~Mentions~~\n";
+}
+
+if ($mentions){
     eval {
-        my $mentions = $twitter->({ mentions => 5 });
+        my $mentions = $twitter->mentions({ count => 5 });
         for my $mention ( @$mentions ) {
-            print "$mention->{created_at} <$mention->{user}{screen_name}> $mention->{text}\n";
+            print("$mention->{created_at} ".
+                  "<$mention->{user}{screen_name}> ".
+                  "$mention->{text}\n");
         }
     }
 }
