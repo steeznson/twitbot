@@ -24,17 +24,19 @@ my $mentions;
 my $posttweet;
 my $user;
 my $search;
+my $help;
 
 GetOptions(
     "posttweet=s" => \$posttweet, # string
     "user=s" => \$user, # string
     "search=s" => \$search, # string
     "mentions" => \$mentions, # bool
-    "timeline" => \$timeline # bool
+    "timeline" => \$timeline, # bool
+    "help" => \$help # bool
 );
 
 # setup connection
-my $twitter = Net::Twitter::Lite::WithAPIv1_1->new(
+my $nt = Net::Twitter::Lite::WithAPIv1_1->new(
     access_token_secret => $ENV{TWITTER_ACCESS_SECRET},
     consumer_secret     => $ENV{TWITTER_CONSUMER_SECRET},
     access_token        => $ENV{TWITTER_ACCESS_TOKEN},
@@ -48,7 +50,7 @@ sub tweet{
         $posttweet = substr($posttweet, 0, 239);
     }
     try{
-        $twitter->update($posttweet);
+        $nt->update($posttweet);
     } catch{
         die join(' ',
                  "Error tweeting $posttweet",
@@ -58,6 +60,16 @@ sub tweet{
     };
 }
 
+if ($help){
+    print(
+        "--posttweet, -p :str post tweet\n" .
+        "--user, -u :str search another user timeline\n" .
+        "--search, -s :str search all recent tweets\n" .
+        "--mentions, -m :bool see recent mentions\n" .
+        "--timeline, -t :bool see my timeline\n" .
+        "--help, -h :bool see help\n");
+}
+
 if ($posttweet){
     print 'TWEETED: '.$posttweet."\n";
     tweet($posttweet);
@@ -65,7 +77,7 @@ if ($posttweet){
 
 if ($timeline){
     eval {
-        my $statuses = $twitter->home_timeline({ count => 5 });
+        my $statuses = $nt->home_timeline({ count => 5 });
         for my $status ( @$statuses ) {
             print("$status->{created_at} ".
                   "<$status->{user}{screen_name}> ".
@@ -76,7 +88,7 @@ if ($timeline){
 
 if ($user){
     eval {
-        my $statuses = $twitter->
+        my $statuses = $nt->
             user_timeline({ count => 5, screen_name => $user });
         for my $status ( @$statuses ) {
             print("$status->{created_at} ".
@@ -88,20 +100,20 @@ if ($user){
 
 if ($mentions){
     eval {
-        my $mentions = $twitter->mentions({ count => 5 });
+        my $mentions = $nt->mentions({ count => 5 });
         for my $mention ( @$mentions ) {
             print("$mention->{created_at} ".
                   "<$mention->{user}{screen_name}> ".
                   "$mention->{text}\n");
         }
-    }
+    };
 }
 
 if ($search){
     eval {
-        my $searchresults = $twitter->search($search);
+        my $searchresults = $nt->search($search);
         for my $res ( @{$searchresults->{statuses}} ) {
             print "$res->{text}\n";
         }
-    }
+    };
 }
