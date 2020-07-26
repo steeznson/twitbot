@@ -19,6 +19,7 @@ unless ($ENV{TWITTER_CONSUMER_KEY}
 }
 
 # parse cli args
+my $count = 5;
 my $timeline;
 my $mentions;
 my $posttweet;
@@ -27,6 +28,7 @@ my $search;
 my $help;
 
 GetOptions(
+    "count=i" => \$count, # int
     "posttweet=s" => \$posttweet, # string
     "user=s" => \$user, # string
     "search=s" => \$search, # string
@@ -77,7 +79,7 @@ if ($posttweet){
 
 if ($timeline){
     eval {
-        my $statuses = $nt->home_timeline({ count => 5 });
+        my $statuses = $nt->home_timeline({ count => $count });
         for my $status ( @$statuses ) {
             print("$status->{created_at} ".
                   "<$status->{user}{screen_name}> ".
@@ -89,7 +91,7 @@ if ($timeline){
 if ($user){
     eval {
         my $statuses = $nt->
-            user_timeline({ count => 5, screen_name => $user });
+            user_timeline({ count => $count, screen_name => $user });
         for my $status ( @$statuses ) {
             print("$status->{created_at} ".
                   "<$status->{user}{screen_name}> ".
@@ -100,7 +102,7 @@ if ($user){
 
 if ($mentions){
     eval {
-        my $mentions = $nt->mentions({ count => 5 });
+        my $mentions = $nt->mentions({ count => $count });
         for my $mention ( @$mentions ) {
             print("$mention->{created_at} ".
                   "<$mention->{user}{screen_name}> ".
