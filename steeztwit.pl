@@ -64,6 +64,7 @@ sub tweet{
 
 if ($help){
     print(
+        "--count, -c :int specify number of tweets to fetch\n" .
         "--posttweet, -p :str post tweet\n" .
         "--user, -u :str search another user timeline\n" .
         "--search, -s :str search all recent tweets\n" .
@@ -79,11 +80,11 @@ if ($posttweet){
 
 if ($timeline){
     eval {
-        my $statuses = $nt->home_timeline({ count => $count });
+        my $statuses = $nt->home_timeline({ count => $count, tweet_mode => "extended" });
         for my $status ( @$statuses ) {
             print("$status->{created_at} ".
                   "<$status->{user}{screen_name}> ".
-                  "$status->{text}\n");
+                  "$status->{full_text}\n");
         }
     };
 }
@@ -91,22 +92,22 @@ if ($timeline){
 if ($user){
     eval {
         my $statuses = $nt->
-            user_timeline({ count => $count, screen_name => $user });
+            user_timeline({ count => $count, screen_name => $user, tweet_mode => "extended" });
         for my $status ( @$statuses ) {
             print("$status->{created_at} ".
                   "<$status->{user}{screen_name}> ".
-                  "$status->{text}\n");
+                  "$status->{full_text}\n");
         }
     };
 }
 
 if ($mentions){
     eval {
-        my $mentions = $nt->mentions({ count => $count });
+        my $mentions = $nt->mentions({ count => $count, tweet_mode => "extended" });
         for my $mention ( @$mentions ) {
             print("$mention->{created_at} ".
                   "<$mention->{user}{screen_name}> ".
-                  "$mention->{text}\n");
+                  "$mention->{full_text}\n");
         }
     };
 }
