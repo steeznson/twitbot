@@ -64,13 +64,13 @@ sub tweet{
 
 if ($help){
     print(
-        "--count, -c :int specify number of tweets to fetch\n" .
-        "--posttweet, -p :str post tweet\n" .
-        "--user, -u :str search another user timeline\n" .
-        "--search, -s :str search all recent tweets\n" .
-        "--mentions, -m :bool see recent mentions\n" .
-        "--timeline, -t :bool see my timeline\n" .
-        "--help, -h :bool see help\n");
+        "--count, -c : (int) specify number of tweets to fetch\n" .
+        "--posttweet, -p : (str) post tweet\n" .
+        "--user, -u : (str) search another user timeline\n" .
+        "--search, -s : (str) search all recent tweets\n" .
+        "--mentions, -m : see recent mentions\n" .
+        "--timeline, -t : see my timeline\n" .
+        "--help, -h : see help\n");
 }
 
 if ($posttweet){
