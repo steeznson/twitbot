@@ -1,10 +1,10 @@
-#!/usr/bin/perl /home/james/programs/twitbot/steeztwit.pl
+#!/usr/local/bin/perl /home/james/programs/twitbot/steeztwit.pl
 use utf8;
 use open ':encoding(utf8)';
 use strict;
 use warnings;
 use Getopt::Long;
-use Net::Twitter::Lite::WithAPIv1_1;
+use Twitter::API;
 use Try::Tiny;
 
 # fix UTF-8 output
@@ -38,12 +38,12 @@ GetOptions(
 );
 
 # setup connection
-my $nt = Net::Twitter::Lite::WithAPIv1_1->new(
+my $nt = Twitter::API->new_with_traits(
+    traits              => 'Enchilada',
     access_token_secret => $ENV{TWITTER_ACCESS_SECRET},
     consumer_secret     => $ENV{TWITTER_CONSUMER_SECRET},
     access_token        => $ENV{TWITTER_ACCESS_TOKEN},
     consumer_key        => $ENV{TWITTER_CONSUMER_KEY},
-    user_agent          => 'SteezBot',
     ssl => 1);
 
 sub tweet{
